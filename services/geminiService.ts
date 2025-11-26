@@ -3,11 +3,25 @@ import { LevelData, EntityType } from "../types";
 import { TILE_SIZE, SCREEN_HEIGHT } from "../constants";
 
 export const generateLevel = async (difficulty: string, theme: string): Promise<LevelData> => {
-  if (!process.env.API_KEY) {
+  // 1. Try to get key from Vite's standard import.meta.env (Best practice)
+  const viteKey = import.meta.env.VITE_API_KEY;
+  
+  // 2. Try to get key from process.env (Polyfilled by vite.config.ts)
+  const processKey = process.env.API_KEY;
+
+  const finalKey = viteKey || processKey;
+
+  // Debugging logs to help you see what's happening in the browser console (F12)
+  console.log("--- API Key Debug ---");
+  console.log("import.meta.env.VITE_API_KEY exists:", !!viteKey);
+  console.log("process.env.API_KEY exists:", !!processKey);
+  
+  if (!finalKey) {
+    console.error("CRITICAL ERROR: No API Key found. Please set VITE_API_KEY in Vercel Environment Variables.");
     throw new Error("API Key missing");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: finalKey });
 
   const prompt = `Design a 2D platformer level similar to Super Mario. 
   Difficulty: ${difficulty}. 

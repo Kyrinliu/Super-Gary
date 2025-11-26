@@ -28,7 +28,7 @@ const App: React.FC = () => {
       console.error(e);
       // Extract specific error message to help debugging (e.g., "API Key missing" or "Quota exceeded")
       const errorMessage = e instanceof Error ? e.message : "Unknown error";
-      setGenError(`Error: ${errorMessage}. Please check API Key configuration.`);
+      setGenError(`Error: ${errorMessage}. If using Vercel, check 'VITE_API_KEY' in settings and Redeploy.`);
       setStatus(GameStatus.MENU);
     }
   };
