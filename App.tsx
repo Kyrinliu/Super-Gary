@@ -3,7 +3,7 @@ import { GameCanvas } from './components/GameCanvas';
 import { GameStatus, LevelData } from './types';
 import { DEFAULT_LEVEL } from './constants';
 import { generateLevel } from './services/geminiService';
-import { Gamepad2, Wand2, Loader2, Trophy, Skull } from 'lucide-react';
+import { Gamepad2, Loader2, Trophy, Skull } from 'lucide-react';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<GameStatus>(GameStatus.MENU);
@@ -24,9 +24,11 @@ const App: React.FC = () => {
       const newLevel = await generateLevel(difficulty, randomTheme);
       setCurrentLevel(newLevel);
       setStatus(GameStatus.PLAYING);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setGenError("Failed to generate level. Please check API Key or try again.");
+      // Extract specific error message to help debugging (e.g., "API Key missing" or "Quota exceeded")
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      setGenError(`Error: ${errorMessage}. Please check API Key configuration.`);
       setStatus(GameStatus.MENU);
     }
   };
@@ -38,7 +40,7 @@ const App: React.FC = () => {
 
   const returnToMenu = () => {
     setStatus(GameStatus.MENU);
-    setCurrentLevel(DEFAULT_LEVEL); // Reset to default or keep generated? Let's reset for simplicity.
+    setCurrentLevel(DEFAULT_LEVEL);
   };
 
   return (
